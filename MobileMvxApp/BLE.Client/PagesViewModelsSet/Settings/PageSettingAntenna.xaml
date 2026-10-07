@@ -11,7 +11,7 @@
 
             <StackLayout Orientation="Horizontal" >
                 <Label Text="Antenna 1 (External)"  VerticalOptions="Start" MinimumWidthRequest="150" />
-                <Switch x:Name="switchAntenna1Enable" />
+                <Switch x:Name="switchAntenna1Enable"/>
             </StackLayout>
 
             <StackLayout Orientation="Horizontal" >
@@ -22,6 +22,11 @@
             <StackLayout Orientation="Horizontal" >
                 <Label Text="Dwell"  VerticalOptions="Start" MinimumWidthRequest="150" />
 				<Entry x:Name="entryDwell1" MinimumWidthRequest="300" />
+            </StackLayout>
+
+            <StackLayout Orientation="Horizontal" >
+                <Label Text="Antenna Detect (for antennas with a 10kΩ shunt resistor inside, also only activated when selected)" VerticalOptions="Center" />
+                <Switch x:Name="switchAntennaDetect"/>
             </StackLayout>
 
             <BoxView x:Name="boxview2" HorizontalOptions="FillAndExpand" HeightRequest="5" Color="Black"/>
@@ -82,4 +87,3 @@
         </StackLayout>
     </ScrollView>
 </views:MvxContentPage>
-    

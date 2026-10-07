@@ -7,47 +7,54 @@
                       Title="RFID Inventory">
 
 
-  <StackLayout>
-    <ListView x:Name="liewViewTagData" ItemsSource="{Binding TagInfoList}" ItemSelected="OnItemSelected" RowHeight="{Binding ListViewRowHeight}">
+    <StackLayout>
+        <ListView x:Name="liewViewTagData" ItemsSource="{Binding TagInfoList}" ItemSelected="OnItemSelected" RowHeight="{Binding ListViewRowHeight}">
 
-      <ListView.Header>
-        <StackLayout Padding="10,5,0,5" BackgroundColor="#cccccc">
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="0.8*" />
-              <ColumnDefinition Width="0.2*" />
-            </Grid.ColumnDefinitions>
-                        <Label Text="{Binding EPCHeaderText}" VerticalTextAlignment="Center" FontSize="Small" />
-                        <Label Grid.Column="1" Text="{Binding RSSIHeaderText}" VerticalTextAlignment="Center" HorizontalTextAlignment="Start" FontSize="Small" />
-          </Grid>
-        </StackLayout>
-      </ListView.Header>
+            <ListView.Header>
+                <StackLayout Padding="10,5,0,5" BackgroundColor="#cccccc">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.7*" />
+                            <ColumnDefinition Width="0.1*" />
+                            <ColumnDefinition Width="0.2*" />
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" Text="{Binding EPCHeaderText}" VerticalTextAlignment="Center" FontSize="Small" />
+                        <Label Grid.Column="1" Text="PORT" VerticalTextAlignment="Center" FontSize="Small" />
+                        <Label Grid.Column="2" Text="{Binding RSSIHeaderText}" VerticalTextAlignment="Center" HorizontalTextAlignment="Start" FontSize="Small" />
+                        <!--"<Label Grid.Column="1" Text="{Binding RSSIHeaderText}" VerticalTextAlignment="Center" HorizontalTextAlignment="Start" FontSize="Small" />-->
+                    </Grid>
+                </StackLayout>
+            </ListView.Header>
 
-      <ListView.ItemTemplate>
-        <DataTemplate>
-          <ViewCell>
-            <StackLayout Orientation="Vertical">
-              <Grid>
-                <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="0.8*" />
-                  <ColumnDefinition Width="0.2*" />
-                </Grid.ColumnDefinitions>
-                <Label Text="{Binding EPC}" VerticalTextAlignment="Center" FontSize="Small" />
-                <Label Grid.Column="1" Text="{Binding RSSI}" VerticalTextAlignment="Center" HorizontalTextAlignment="Start" />
-              </Grid>
-              
-                <Label Text="{Binding Bank1Data}" VerticalTextAlignment="Center" FontSize="Small" />
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout Orientation="Vertical">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="0.7*" />
+                                    <ColumnDefinition Width="0.1*" />
+                                    <ColumnDefinition Width="0.2*" />
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Column="0" Text="{Binding EPC}" VerticalTextAlignment="Center" FontSize="Small" />
+                                <Label Grid.Column="1" Text="{Binding PORT}" VerticalTextAlignment="Center" FontSize="Small" />
+                                <Label Grid.Column="2" Text="{Binding RSSI}" VerticalTextAlignment="Center" HorizontalTextAlignment="Start" />
+                                <!--<Label Grid.Column="1" Text="{Binding RSSI}" VerticalTextAlignment="Center" HorizontalTextAlignment="Start" />-->
+                            </Grid>
 
-              </StackLayout>
-          </ViewCell>
-        </DataTemplate>
-      </ListView.ItemTemplate>
+                            <Label Text="{Binding Bank1Data}" VerticalTextAlignment="Center" FontSize="Small" />
 
-    </ListView>
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
 
-    <StackLayout Orientation="Vertical" >
+        </ListView>
 
-      <Button Text= "{Binding startInventoryButtonText}" Font="Large" Command="{Binding OnStartInventoryButtonCommand}" />
+        <StackLayout Orientation="Vertical" >
+
+            <Button Text= "{Binding startInventoryButtonText}" Font="Large" Command="{Binding OnStartInventoryButtonCommand}" />
+            <Label Text="{Binding AntennaDetectedMessage}" Font="Small" TextColor="red" HorizontalOptions="CenterAndExpand" VerticalOptions="Center" />
 
             <StackLayout Orientation="Horizontal">
                 <Button Text="HEX" Font="Large" Command="{Binding OnHEXButtonCommand}" HorizontalOptions="StartAndExpand" />
@@ -55,31 +62,33 @@
                 <Button Text="SGTIN" Font="Large" Command="{Binding OnSGTINButtonCommand}" HorizontalOptions="EndAndExpand" />
             </StackLayout>
 
+            <StackLayout Orientation="Horizontal">
+                <Button Text="Clear" Font="Large" Command="{Binding OnClearButtonCommand}" HorizontalOptions="StartAndExpand" />
+                <Button Text="Send" Font="Large" Command="{Binding OnSendDataCommand}" HorizontalOptions="CenterAndExpand" />
+                <Button Text="Share" Font="Large" Command="{Binding OnShareDataCommand}" HorizontalOptions="CenterAndExpand" />
+                <Button Text="Save" Font="Large" Command="{Binding OnSaveDataCommand}" HorizontalOptions="EndAndExpand" />
+                <!--<Button x:Name="buttonShare" Text="Share" Font="Large" Clicked="OnButtonShareClicked" HorizontalOptions="EndAndExpand" />-->
+            </StackLayout>
 
             <StackLayout Orientation="Horizontal">
-        <Button Text="Clear" Font="Large" Command="{Binding OnClearButtonCommand}" HorizontalOptions="StartAndExpand" />
-        <Button Text="Send" Font="Large" Command="{Binding OnSendDataCommand}" HorizontalOptions="CenterAndExpand" />
-        <Button Text="Share" Font="Large" Command="{Binding OnShareDataCommand}" HorizontalOptions="CenterAndExpand" />
-        <Button Text="Save" Font="Large" Command="{Binding OnSaveDataCommand}" HorizontalOptions="EndAndExpand" />
-        <!--<Button x:Name="buttonShare" Text="Share" Font="Large" Clicked="OnButtonShareClicked" HorizontalOptions="EndAndExpand" />-->
-	  </StackLayout>
 
-      <StackLayout Orientation="Horizontal">
+                <Label Text="{Binding FilterIndicator}" Font="Small" TextColor="Red" HorizontalOptions="Start" VerticalTextAlignment="End"/>
+                <Label Text="{Binding MinimumRSSIText}" Font="Small" TextColor="Blue" HorizontalOptions="Start" VerticalOptions="End" />
+                <Label Text="{Binding totalSingulationText}" Font="Small" TextColor="Blue" HorizontalOptions="StartAndExpand" VerticalOptions="End" />
+                <Label Text="{Binding InventoryTime}" Font="Small" HorizontalOptions="CenterAndExpand" VerticalOptions="End" />
+                <Label Text="{Binding DebugMessage}" Font="Small" HorizontalOptions="EndAndExpand" VerticalOptions="End" />
 
-        <Label Text="{Binding FilterIndicator}" Font="Small" TextColor="Red" HorizontalOptions="Start" VerticalTextAlignment="End"/>
-        <Label Text="{Binding InventoryTime}" Font="Small" HorizontalOptions="CenterAndExpand" VerticalOptions="End" />
-        <Label Text="{Binding DebugMessage}" Font="Small" HorizontalOptions="EndAndExpand" VerticalOptions="End" />
+            </StackLayout>
 
-      </StackLayout>
+            <StackLayout Orientation="Horizontal">
 
-      <StackLayout Orientation="Horizontal">
+                <Label Text="{Binding numberOfTagsText}" Font="Small" HorizontalOptions="StartAndExpand" VerticalOptions="CenterAndExpand" />
+                <Label Text="{Binding labelVoltage}" Font="Small" TextColor = "{Binding labelVoltageTextColor}" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" />
+                <Label Text="{Binding tagPerSecondText}" Font="Small" HorizontalOptions="EndAndExpand" VerticalOptions="CenterAndExpand" />
 
-        <Label Text="{Binding numberOfTagsText}" Font="Small" HorizontalOptions="StartAndExpand" VerticalOptions="CenterAndExpand" />
-        <Label Text="{Binding labelVoltage}" Font="Small" TextColor = "{Binding labelVoltageTextColor}" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" />
-        <Label Text="{Binding tagPerSecondText}" Font="Small" HorizontalOptions="EndAndExpand" VerticalOptions="CenterAndExpand" />
+            </StackLayout>
 
-      </StackLayout>
+        </StackLayout>
+
     </StackLayout>
-  
-  </StackLayout>
 </views:MvxContentPage>

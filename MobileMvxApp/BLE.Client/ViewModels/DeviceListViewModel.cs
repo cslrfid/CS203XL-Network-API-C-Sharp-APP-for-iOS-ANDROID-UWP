@@ -195,6 +195,12 @@ namespace BLE.Client.ViewModels
             var DeviceName = e.Found.DeviceName;
             var IP = e.Found.IPAddress;
 
+            // Remove all control characters (including \r, \n, etc.)
+            if (!string.IsNullOrEmpty(DeviceName))
+            {
+                DeviceName = new string(DeviceName.Where(c => !char.IsControl(c)).ToArray());
+            }
+
             AddOrUpdateDevice(DeviceName, IP, MODEL.CS203XL);
         }
 

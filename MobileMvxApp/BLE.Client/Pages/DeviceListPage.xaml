@@ -75,7 +75,7 @@
                  IsPullToRefreshEnabled="True"
                  RefreshCommand="{Binding RefreshCommand}"
                  IsRefreshing="{Binding IsRefreshing, Mode=OneWay}"
-                 RowHeight="80"
+                 RowHeight="110"
                  ItemTemplate="{StaticResource DeviceItemTemplate}">
                 </ListView>
 

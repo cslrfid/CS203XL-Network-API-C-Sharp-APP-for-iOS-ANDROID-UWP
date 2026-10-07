@@ -112,16 +112,16 @@
 
             <StackLayout Orientation="Horizontal">
                 <Label Text="Use full query when increasing Q" WidthRequest="190" VerticalOptions="Center" />
-                <Label Text="Off" VerticalOptions="Center" />
+                <!--<Label Text="Off" VerticalOptions="Center" />-->
                 <Switch x:Name="switchQIncreaseUseQuery" />
-                <Label Text="On" VerticalOptions="Center" />
+                <!--<Label Text="On" VerticalOptions="Center" />-->
             </StackLayout>
 
             <StackLayout Orientation="Horizontal">
                 <Label Text="Use full query when decrease Q" WidthRequest="190" VerticalOptions="Center" />
-                <Label Text="Off" VerticalOptions="Center" />
+                <!--<Label Text="Off" VerticalOptions="Center" />-->
                 <Switch x:Name="switchQDecreaseUseQuery" />
-                <Label Text="On" VerticalOptions="Center" />
+                <!--<Label Text="On" VerticalOptions="Center" -/>-->
             </StackLayout>
 
             <StackLayout Orientation="Horizontal">

@@ -8,8 +8,8 @@
 
   <Identity
     Name="94efadeb-c35f-4e8b-8771-0e583097454d"
-    Publisher="CN=convergence.com.hk"
-    Version="0.0.18.0" />
+    Publisher="CN=Mephist Siu"
+    Version="1.0.22.0" />
 
   <mp:PhoneIdentity PhoneProductId="94efadeb-c35f-4e8b-8771-0e583097454c" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 

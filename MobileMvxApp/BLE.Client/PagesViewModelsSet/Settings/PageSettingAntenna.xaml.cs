@@ -30,6 +30,8 @@ namespace BLE.Client.Pages
             ANTENNAOPTION[] antennaOptions = new ANTENNAOPTION[BleMvxApplication._reader.rfid.AntennaList.Count];
 
             switchAntenna1Enable.IsToggled = BleMvxApplication._config.RFID_AntennaEnable[0];
+            switchAntennaDetect.IsToggled = BleMvxApplication._config.RFID_AntennaDetect;
+
             switchAntenna2Enable.IsToggled = BleMvxApplication._config.RFID_AntennaEnable[1];
             //switchAntenna3Enable.IsToggled = BleMvxApplication._config.RFID_AntennaEnable[2];
             //switchAntenna4Enable.IsToggled = BleMvxApplication._config.RFID_AntennaEnable[3];
@@ -59,6 +61,8 @@ namespace BLE.Client.Pages
         {
             Xamarin.Forms.DependencyService.Get<ISystemSound>().SystemSound(1);
 
+            BleMvxApplication._config.RFID_AntennaDetect = switchAntennaDetect.IsToggled;
+
             BleMvxApplication._config.RFID_AntennaEnable[0] = switchAntenna1Enable.IsToggled;
             BleMvxApplication._config.RFID_AntennaEnable[1] = switchAntenna2Enable.IsToggled;
 //            BleMvxApplication._config.RFID_AntennaEnable[2] = switchAntenna3Enable.IsToggled;
@@ -82,6 +86,16 @@ namespace BLE.Client.Pages
                 BleMvxApplication._reader.rfid.SetPowerLevel(BleMvxApplication._config.RFID_Antenna_Power[cnt], cnt);
                 BleMvxApplication._reader.rfid.SetInventoryDuration(BleMvxApplication._config.RFID_Antenna_Dwell[cnt], (uint)cnt);
             }
+
+            if (switchAntenna1Enable.IsToggled && switchAntennaDetect.IsToggled)
+            {
+                BleMvxApplication._reader.rfid.SetAntennaDetect(true);
+            }
+            else
+            {
+                BleMvxApplication._reader.rfid.SetAntennaDetect(false);
+            }
+
         }
     }
 }

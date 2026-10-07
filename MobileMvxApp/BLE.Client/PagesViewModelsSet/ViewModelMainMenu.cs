@@ -89,7 +89,7 @@ namespace BLE.Client.ViewModels
             {
                 
                 //connectedButton = "Connected to " + BleMvxApplication._reader.ReaderName + "/Select Another";
-                connectedButton = "Connected to " + BleMvxApplication.readerName + "/Select Another";
+                connectedButton = "Connected to " + BleMvxApplication.readerName + " (" + BleMvxApplication.connectionName + ") /Select Another";
                 connectedButtonTextColor = "Blue";
             }
             else
@@ -227,6 +227,14 @@ namespace BLE.Client.ViewModels
                     BleMvxApplication._reader.rfid.SetInventoryDuration(BleMvxApplication._config.RFID_Antenna_Dwell[cnt], cnt);
                 }
 
+                if (BleMvxApplication._config.RFID_AntennaEnable[0] && BleMvxApplication._config.RFID_AntennaDetect)
+                {
+                    BleMvxApplication._reader.rfid.SetAntennaDetect(true);
+                }
+                else
+                {
+                    BleMvxApplication._reader.rfid.SetAntennaDetect(false);
+                }
             }
         }
 

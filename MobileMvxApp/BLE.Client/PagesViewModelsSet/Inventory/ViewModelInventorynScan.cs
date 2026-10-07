@@ -1,33 +1,29 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Collections.Generic;
-using Acr.UserDialogs;
-using System.Windows.Input;
-using Xamarin.Forms;
-using Xamarin.Essentials;
-using System.Net;
-
-using System.Net.Http;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
-
-using Plugin.BLE.Abstractions.Contracts;
-
+﻿using Acr.UserDialogs;
+using CSLibrary.Barcode.Constants;
+using MvvmCross.ViewModels;
+using Newtonsoft.Json.Linq;
 using Plugin.BLE.Abstractions;
-using Prism.Mvvm;
-
-using System.Net.Http;
-using System.Net.Http.Headers;
-
+using Plugin.BLE.Abstractions.Contracts;
 using Plugin.Share;
 using Plugin.Share.Abstractions;
-using MvvmCross.ViewModels;
-//using Plugin.Permissions.Abstractions;
-using TagDataTranslation;
-using CSLibrary.Barcode.Constants;
-using System.Text.RegularExpressions;
+using Prism.Mvvm;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Security;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Cryptography.X509Certificates;
+using System.Text.RegularExpressions;
+using System.Windows.Input;
+//using Plugin.Permissions.Abstractions;
+using TagDataTranslation;
+using Xamarin.Essentials;
+using Xamarin.Forms;
 
 // GTIN Convert
 
@@ -46,6 +42,10 @@ namespace BLE.Client.ViewModels
         public string Bank1Data { get { return this._Bank1Data; } set { this.SetProperty(ref this._Bank1Data, value); } }
         private string _Bank2Data;
         public string Bank2Data { get { return this._Bank2Data; } set { this.SetProperty(ref this._Bank2Data, value); } }
+
+        private string _PORT;
+        public string PORT { get { return this._PORT; } set { this.SetProperty(ref this._PORT, value); } }
+
         private float _RSSI;
         public float RSSI
         {
@@ -204,6 +204,13 @@ namespace BLE.Client.ViewModels
         public string _DebugMessage = "";
         public string DebugMessage { get { return _DebugMessage; } }
 
+        public string _AntennaDetectedMessage = "";
+        public string AntennaDetectedMessage { get { return _AntennaDetectedMessage; } }
+
+        float minimumRSSI = 0.0f;
+        public string _MinimumRSSIText = "";
+        public string MinimumRSSIText { get { return _MinimumRSSIText; } }
+
         string _EPCHeaderText;
         public string EPCHeaderText { get { return _EPCHeaderText; } }
         string _RSSIHeaderText;
@@ -224,6 +231,15 @@ namespace BLE.Client.ViewModels
 
         int _displayFormat = 0; // Display format, 0=HEX, 1=UPC, 2=GTIN
 
+        private uint _totalSingulationCount = 0;
+        private string _totalSingulationText = "";
+        public string totalSingulationText
+        {
+            get => _totalSingulationText;
+            set => SetProperty(ref _totalSingulationText, value);
+        }
+
+        
         #endregion
 
         public ViewModelInventorynScan(IAdapter adapter, IUserDialogs userDialogs/* , IPermissions permissions */) : base(adapter)
@@ -444,6 +460,12 @@ namespace BLE.Client.ViewModels
 
             _tagCount4Display = 0;
             _tagPerSecondText = "0/" + _newTagPerSecond.ToString() + " Rate/New     ";
+            _totalSingulationCount += 0; 
+            totalSingulationText = $"Total Singulation: {_totalSingulationCount}";
+
+            minimumRSSI = 0.0f;
+            _MinimumRSSIText = "Minimum RSSI (ALL Tags) = - " + Math.Abs(Math.Round(minimumRSSI)).ToString() + " dBm";
+            RaisePropertyChanged(() => MinimumRSSIText);
 
             RaisePropertyChanged(() => tagPerSecondText);
         }
@@ -520,7 +542,8 @@ namespace BLE.Client.ViewModels
             BleMvxApplication._reader.rfid.SetRSSIdBmFilter(BleMvxApplication._RSSIFILTER_Type, BleMvxApplication._RSSIFILTER_Option, BleMvxApplication._RSSIFILTER_Threshold_dBm);
 
             BleMvxApplication._reader.rfid.Options.TagRanging.multibanks = 0;
-            BleMvxApplication._reader.rfid.Options.TagRanging.compactmode = true;
+            //BleMvxApplication._reader.rfid.Options.TagRanging.compactmode = true; // without antenna port number, the reader will use the last antenna port number for inventory
+            BleMvxApplication._reader.rfid.Options.TagRanging.compactmode = false; // with antenna port number, the reader will use the antenna port number for inventory
             BleMvxApplication._reader.rfid.Options.TagRanging.focus = BleMvxApplication._config.RFID_Focus;
             BleMvxApplication._reader.rfid.Options.TagRanging.fastid = BleMvxApplication._config.RFID_FastId;
 
@@ -547,9 +570,9 @@ namespace BLE.Client.ViewModels
             RaisePropertyChanged(() => ListViewRowHeight);
 
             InventoryStartTime = DateTime.Now;
-
             _Vibrating = false;
             _noNewTag = 0;
+            _totalSingulationCount = 0;
             if (BleMvxApplication._config.RFID_Vibration)
                 BleMvxApplication._reader.barcode.VibratorOn(CSLibrary.BarcodeReader.VIBRATORMODE.INVENTORYON, BleMvxApplication._config.RFID_VibrationTime);
 
@@ -633,6 +656,12 @@ namespace BLE.Client.ViewModels
                 RaisePropertyChanged(() => tagPerSecondText);
                 _tagCount4Display = 0;
                 _newTagPerSecond = 0;
+
+                _MinimumRSSIText = "Minimum RSSI (ALL Tags) = - " + Math.Abs(Math.Round(minimumRSSI)).ToString() + " dBm";
+                RaisePropertyChanged(() => MinimumRSSIText);
+
+                _totalSingulationCount += _readerInventoryTagRate; // Add to total
+                totalSingulationText = $",     Total Singulation = {_totalSingulationCount}";
 
                 // for fix Network API daemon bug
                 {
@@ -760,6 +789,19 @@ namespace BLE.Client.ViewModels
             _readerInventoryTagRate = e.inventoryTagRate;
         }
 
+        string GgetPortName(uint antennaPort)
+        {
+            switch (antennaPort)
+            {
+                case 0:
+                    return "Ext";
+                case 1:
+                    return "Int";
+                default:
+                    return antennaPort.ToString();
+            }
+        }
+
         private void AddOrUpdateTagData(CSLibrary.Structures.TagCallbackInfo info)
         {
             InvokeOnMainThread(() =>
@@ -829,9 +871,11 @@ namespace BLE.Client.ViewModels
                             item.Bank2Data = CSLibrary.Tools.Hex.ToString(info.Bank2Data);
 //                        }
                         item.RSSI = info.rssidBm;
+                        minimumRSSI = (minimumRSSI == 0.0f) ? info.rssidBm : Math.Min(minimumRSSI, info.rssidBm);
                         //item.Phase = info.phase;
                         //item.Channel = (byte)info.freqChannel;
                         item.PC = info.pc.ToUshorts()[0];
+                        item.PORT = GgetPortName(info.antennaPort);
 
                         //TagInfoList.Add(item);
                         if (BleMvxApplication._config.RFID_NewTagLocation)
@@ -868,6 +912,7 @@ namespace BLE.Client.ViewModels
 //                            }
 
                             TagInfoList[values.index].RSSI = info.rssidBm;
+                            TagInfoList[values.index].PORT = GgetPortName(info.antennaPort);
                         }
                         else
                         {
@@ -946,6 +991,7 @@ namespace BLE.Client.ViewModels
                                 TagInfoList[index].Bank2Data = CSLibrary.Tools.Hex.ToString(info.Bank2Data);
 
                             TagInfoList[index].RSSI++;
+                            TagInfoList[index].PORT = GgetPortName(info.antennaPort);
                         }
                         else
                         {
@@ -968,6 +1014,7 @@ namespace BLE.Client.ViewModels
 
                             item.displayFormat = 1;
                             item.RSSI = 1;
+                            item.PORT = GgetPortName(info.antennaPort);
                             item.PC = info.pc.ToUshorts()[0];
 
                             if (BleMvxApplication._config.RFID_NewTagLocation)
@@ -1054,6 +1101,7 @@ namespace BLE.Client.ViewModels
                                 TagInfoList[index].Bank2Data = CSLibrary.Tools.Hex.ToString(info.Bank2Data);
 
                             TagInfoList[index].RSSI = info.rssidBm;
+                            TagInfoList[index].PORT = GgetPortName(info.antennaPort);
                         }
                         else
                         {
@@ -1064,9 +1112,10 @@ namespace BLE.Client.ViewModels
                             item.timeOfRead = DateTime.Now;
                             item.EPC = TagURI;
                             item.EPC_ORG = epcstr;
+                            item.PORT = GgetPortName(info.antennaPort);
 
-//                            if (BleMvxApplication._reader.rfid.Options.TagRanging.fastid)
-//                                item.Bank1Data = CSLibrary.Tools.Hex.ToString(info.FastTid);
+                            //                            if (BleMvxApplication._reader.rfid.Options.TagRanging.fastid)
+                            //                                item.Bank1Data = CSLibrary.Tools.Hex.ToString(info.FastTid);
 
                             if (BleMvxApplication._reader.rfid.Options.TagRanging.multibanks > 0)
                                 item.Bank1Data = CSLibrary.Tools.Hex.ToString(info.Bank1Data);
@@ -1076,6 +1125,7 @@ namespace BLE.Client.ViewModels
 
                             item.RSSI = info.rssidBm;
                             item.PC = info.pc.ToUshorts()[0];
+                            item.PORT = GgetPortName(info.antennaPort);
 
                             if (BleMvxApplication._config.RFID_NewTagLocation)
                                 TagInfoList.Insert(0, item);
@@ -1922,9 +1972,19 @@ namespace BLE.Client.ViewModels
 
         void DisplayDebugMessage ()
         {
+            if (BleMvxApplication._reader.rfid.GetAntennaDetect() )
+            {
+                _AntennaDetectedMessage = "Antenna Detect (External Port) On";
+            }
+            else
+            {
+                _AntennaDetectedMessage = "";
+            }
+
             _DebugMessage = " IP:" + BleMvxApplication.connectionName;
             _DebugMessage += "/Profile:" + BleMvxApplication._config.RFID_Profile.ToString();
             //_DebugMessage += "/" + CSLibrary.InventoryDebug._inventoryPacketCount.ToString() + " OK, " + CSLibrary.InventoryDebug._inventorySkipPacketCount.ToString() + " Fail";
+            RaisePropertyChanged(() => AntennaDetectedMessage);
             RaisePropertyChanged(() => DebugMessage);
         }
 
