@@ -912,6 +912,7 @@ namespace BLE.Client.ViewModels
 //                            }
 
                             TagInfoList[values.index].RSSI = info.rssidBm;
+                            minimumRSSI = (minimumRSSI == 0.0f) ? info.rssidBm : Math.Min(minimumRSSI, info.rssidBm);
                             TagInfoList[values.index].PORT = GgetPortName(info.antennaPort);
                         }
                         else
@@ -1101,6 +1102,7 @@ namespace BLE.Client.ViewModels
                                 TagInfoList[index].Bank2Data = CSLibrary.Tools.Hex.ToString(info.Bank2Data);
 
                             TagInfoList[index].RSSI = info.rssidBm;
+                            minimumRSSI = (minimumRSSI == 0.0f) ? info.rssidBm : Math.Min(minimumRSSI, info.rssidBm);
                             TagInfoList[index].PORT = GgetPortName(info.antennaPort);
                         }
                         else
@@ -1124,6 +1126,7 @@ namespace BLE.Client.ViewModels
                                 item.Bank2Data = CSLibrary.Tools.Hex.ToString(info.Bank2Data);
 
                             item.RSSI = info.rssidBm;
+                            minimumRSSI = (minimumRSSI == 0.0f) ? info.rssidBm : Math.Min(minimumRSSI, info.rssidBm);
                             item.PC = info.pc.ToUshorts()[0];
                             item.PORT = GgetPortName(info.antennaPort);
 

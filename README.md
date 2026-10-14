@@ -49,6 +49,10 @@ To build demo application successfully, you need to install Visual Studio 2019 o
 2. CS710S-C-Sharp-APP-for-UWP.sln for Windows UWP platform (BLE.Clinet Target framework set to .net Standard 2.0)
 <br><br>
 
+## Windows Installer Build Caveat
+
+When the installer (UWP `.appx` / `.appxupload`) is built on **Windows 11**, the resulting installer may **not run on Windows 10**. If Windows 10 deployment is required, build the installer **on a Windows 10 machine**.
+
 ## Callback-based API Library
 
 The CS710S Callback-based API Library consists of the following files. 
